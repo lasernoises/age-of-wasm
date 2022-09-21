@@ -6,7 +6,7 @@ pub struct UnitType {
     pub width: u32,
     pub height: u32,
 
-    pub standing: Animation,
+    // pub standing: Animation,
     pub walking: Animation,
     pub attack: Animation,
 
@@ -22,32 +22,9 @@ pub const BOXER: &UnitType = &UnitType {
     width: UNIT4_WIDTH,
     height: UNIT4_HEIGHT,
 
-    standing: &[
-        UNIT4,
-    ],
-    walking: &[
-        UNIT4,
-        UNIT5,
-    ],
-    attack: &[
-        UNIT4_ATTACK1,
-        UNIT4_ATTACK1,
-        UNIT4_ATTACK2,
-    ],
-
-    speed: 4,
-    health: 16,
-    range: 0,
-    damage: 4,
-};
-
-pub const SPEED_BOXER: &UnitType = &UnitType {
-    width: UNIT4_WIDTH,
-    height: UNIT4_HEIGHT,
-
-    standing: &[
-        UNIT4,
-    ],
+    // standing: &[
+    //     UNIT4,
+    // ],
     walking: &[
         UNIT4,
         UNIT5,
@@ -59,7 +36,29 @@ pub const SPEED_BOXER: &UnitType = &UnitType {
     ],
 
     speed: 2,
-    health: 8,
+    health: 32,
     range: 0,
-    damage: 8,
+    damage: 3,
+};
+
+pub const GUNMAN: &UnitType = &UnitType {
+    width: UNIT4_WIDTH,
+    height: UNIT4_HEIGHT,
+
+    // standing: &[
+    //     UNIT4,
+    // ],
+    walking: &[
+        UNIT4,
+        UNIT5,
+    ],
+    attack: &[
+        UNIT4_GUN1,
+        UNIT4_GUN2,
+    ],
+
+    speed: 4,
+    health: 8,
+    range: 32,
+    damage: 5,
 };

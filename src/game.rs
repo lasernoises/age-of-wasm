@@ -11,7 +11,8 @@ use self::unit_types::*;
 
 #[derive(Copy, Clone, PartialEq, Eq)]
 enum Action {
-    Stand,
+    // Standing could depend on what the previous unit is doing.
+    // Stand,
     Walk,
     Attack,
 }
@@ -37,7 +38,7 @@ impl Unit {
             } else {
                 256 - BASE_WIDTH as i32 - 5 - UNIT4_WIDTH as i32
             },
-            action: Action::Stand,
+            action: Action::Walk,
         }
     }
 }
@@ -46,6 +47,7 @@ pub struct Game {
     // frame: u32,
     cam_x: i32,
     button_1: bool,
+    button_2: bool,
     player_units: VecDeque<Unit>,
     enemy_units: VecDeque<Unit>,
     player_base_health: u8,
@@ -58,11 +60,12 @@ impl Game {
             // frame: 0,
             cam_x: 256 - SCREEN_SIZE as i32,
             button_1: false,
+            button_2: false,
             player_units: VecDeque::new(),
             enemy_units: VecDeque::from([
-                Unit::new(SPEED_BOXER, false),
+                Unit::new(GUNMAN, false),
                 Unit::new(BOXER, false),
-                Unit::new(SPEED_BOXER, false),
+                Unit::new(GUNMAN, false),
                 Unit::new(BOXER, false),
             ]),
             player_base_health: 255,
@@ -74,18 +77,23 @@ impl Game {
         let gamepad = unsafe { *GAMEPAD1 };
 
         let prev_button_1 = self.button_1;
+        let prev_button_2 = self.button_2;
 
         self.button_1 = gamepad & BUTTON_1 != 0;
+        self.button_2 = gamepad & BUTTON_2 != 0;
+
+        let button_1_up = prev_button_1 && !self.button_1;
+        let button_2_up = prev_button_2 && !self.button_2;
 
         if self.enemy_base_health == 0 {
+            set_draw_colors(0x2);
             text("You Won!!!", 12, 12);
             return;
         } else if self.player_base_health == 0 {
+            set_draw_colors(0x2);
             text("You Lost!!!", 12, 12);
             return;
         }
-
-        let button_1_up = prev_button_1 && !self.button_1;
 
         // camera movement
         {
@@ -109,7 +117,9 @@ impl Game {
             self.player_units.push_back(Unit::new(BOXER, true));
         }
 
-        set_draw_colors(0x4320);
+        if button_2_up {
+            self.player_units.push_back(Unit::new(GUNMAN, true));
+        }
 
         // player units
         {
@@ -132,6 +142,8 @@ impl Game {
                 last_unit = Some(unit);
             }
         }
+
+        set_draw_colors(0x4320);
 
         // player base
         blit(
@@ -284,8 +296,10 @@ fn update_unit(
 
         unit.animation_frame = (unit.animation_frame + 1) % 16;
     } else {
-        unit.action = Stand;
-        unit.animation_frame = 0;
+        if unit.action != Walk {
+            unit.action = Walk;
+            unit.animation_frame = 0;
+        }
 
         // TODO: Standing animation
     }
@@ -307,6 +321,8 @@ fn update_unit(
         BLIT_2BPP | BLIT_FLIP_X
     };
 
+    set_draw_colors(0x4320);
+
     blit(
         sprite,
         x,
@@ -315,4 +331,16 @@ fn update_unit(
         sprites::UNIT4_HEIGHT,
         flags,
     );
+
+    if unit.health < unit.unit_type.health {
+        let bar_size = 12 * unit.health as u32 / unit.unit_type.health as u32;
+
+        let x = unit.x + unit.unit_type.width as i32 / 2 - 6;
+
+        set_draw_colors(0x4);
+        rect(x - cam_x, SCREEN_SIZE as i32 - unit.unit_type.height as i32 - 4, bar_size, 2);
+
+        set_draw_colors(0x2);
+        rect(x + bar_size as i32 - cam_x, SCREEN_SIZE as i32 - unit.unit_type.height as i32 - 4, 12 - bar_size, 2);
+    }
 }
