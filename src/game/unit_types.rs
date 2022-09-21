@@ -2,24 +2,23 @@ use crate::sprites::*;
 
 type Animation = &'static [&'static [u8]];
 
-struct UnitType {
-    width: u32,
-    height: u32,
+pub struct UnitType {
+    pub width: u32,
+    pub height: u32,
 
-    standing: Animation,
-    walking: Animation,
-    attack: Animation,
+    pub standing: Animation,
+    pub walking: Animation,
+    pub attack: Animation,
 
     // frames per pixel
-    speed: u8,
+    pub speed: u8,
 
-    health: u8,
-    range: u8,
-    damage: u8,
+    pub health: u8,
+    pub range: u8,
+    pub damage: u8,
 }
 
-
-const BOXER: UnitType = UnitType {
+pub const BOXER: &UnitType = &UnitType {
     width: UNIT4_WIDTH,
     height: UNIT4_HEIGHT,
 
@@ -32,11 +31,35 @@ const BOXER: UnitType = UnitType {
     ],
     attack: &[
         UNIT4_ATTACK1,
+        UNIT4_ATTACK1,
         UNIT4_ATTACK2,
     ],
 
     speed: 4,
     health: 16,
-    range: 16,
+    range: 0,
     damage: 4,
+};
+
+pub const SPEED_BOXER: &UnitType = &UnitType {
+    width: UNIT4_WIDTH,
+    height: UNIT4_HEIGHT,
+
+    standing: &[
+        UNIT4,
+    ],
+    walking: &[
+        UNIT4,
+        UNIT5,
+    ],
+    attack: &[
+        UNIT4_ATTACK1,
+        UNIT4_ATTACK1,
+        UNIT4_ATTACK2,
+    ],
+
+    speed: 2,
+    health: 8,
+    range: 0,
+    damage: 8,
 };
